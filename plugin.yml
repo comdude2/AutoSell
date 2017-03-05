@@ -1,0 +1,10 @@
+name: Autosell
+main: net.comdude2.plugins.commissioned.autosell.main.AutoSell
+version: 1.0.0
+author: comdude2
+commands:
+   autosell:
+      description: The main command of the AutoSell plugin
+      usage: /<command>
+      permission: autosell.use
+      permission-message: You don't have <permission>

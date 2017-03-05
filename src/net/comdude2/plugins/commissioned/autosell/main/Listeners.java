@@ -1,5 +1,7 @@
 package net.comdude2.plugins.commissioned.autosell.main;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -32,17 +34,19 @@ public class Listeners implements Listener{
 			if (event.getLine(0).equalsIgnoreCase("[autosell]")){
 				//My Sign
 				if (event.getBlock().getType() == Material.WALL_SIGN){
+					//Check the attatched block is a chest
 					Sign s = (Sign)event.getBlock().getState().getData();
 					Block attatchedBlock = event.getBlock().getRelative(s.getAttachedFace());
 					if (attatchedBlock.getType() == Material.CHEST){
+						//Is fine
 						
 					}else{
 						event.setCancelled(true);
-						event.getPlayer().sendMessage(AutoSell.me + "");
+						event.getPlayer().sendMessage(AutoSell.me + ChatColor.RED + "You must attatch the sign to a chest.");
 					}
 				}else{
 					event.setCancelled(true);
-					event.getPlayer().sendMessage(AutoSell.me + "");
+					event.getPlayer().sendMessage(AutoSell.me + ChatColor.RED + "You must attatch the sign to a chest.");
 				}
 			}//Not my sign
 		}//No top line, ignore.
