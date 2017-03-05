@@ -1,6 +1,7 @@
 package net.comdude2.plugins.commissioned.autosell.chests;
 
 import java.io.File;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Location;
@@ -13,6 +14,7 @@ public class ChestManager {
 	
 	private AutoSell as = null;
 	private ConcurrentLinkedQueue <AutoChest> chests = new ConcurrentLinkedQueue <AutoChest> ();
+	private ConcurrentLinkedQueue <UUID> do_not_notify = new ConcurrentLinkedQueue <UUID> ();
 	
 	public ChestManager(AutoSell as){
 		this.as = as;
@@ -50,16 +52,39 @@ public class ChestManager {
 			as.getLogger().severe(ChatColor.stripColor(AutoSell.me) + "Chests renamed to 'corruptedChests.obj', creating new chests list.");
 			return false;
 		}
+		//Should be more robust later
+		ConcurrentLinkedQueue <UUID> do_not_notify = null;
+		try{
+			File f = new File(as.getDataFolder() + "/notify.obj");
+			Object o = ObjectManager.readObject(f).readObject();
+			if (o instanceof ConcurrentLinkedQueue <?>){
+				do_not_notify = (ConcurrentLinkedQueue <UUID>)o;
+				this.do_not_notify = do_not_notify;
+				if (do_not_notify.size() > 0){
+					as.getLogger().info("Players to not notify loaded, size was: " + do_not_notify.size());
+				}else{
+					as.getLogger().warning("Players to not notify size was 0, assuming this is normal and no one has opted out.");
+				}
+			}else{
+				throw new Exception("Wrong datatype");
+			}
+		}catch(Exception e){this.do_not_notify = new ConcurrentLinkedQueue <UUID> ();as.getLogger().warning("Failed to load list of players to not notify, creating new...");}
 		return false;
 	}
 	
 	public boolean save(){
+		boolean worked = false;
 		try{
 			File f = new File(as.getDataFolder() + "/chests.obj");
 			ObjectManager.writeObject(f, this.chests);
-			if (f.exists()){return true;}
-		}catch(Exception e){e.printStackTrace();}
-		return false;
+			if (f.exists()){worked = true;}
+		}catch(Exception e){e.printStackTrace();worked = false;}
+		try{
+			File f = new File(as.getDataFolder() + "/notify.obj");
+			ObjectManager.writeObject(f, this.do_not_notify);
+			if (!f.exists()){worked = false;}
+		}catch(Exception e){e.printStackTrace();worked = false;}
+		return worked;
 	}
 	
 	public ConcurrentLinkedQueue <AutoChest> getChests(){
@@ -87,6 +112,22 @@ public class ChestManager {
 	
 	public void remove(AutoChest ac){
 		this.chests.remove(ac);
+	}
+	
+	public ConcurrentLinkedQueue <UUID> getDoNotNotify(){
+		return this.do_not_notify;
+	}
+	
+	public void doNotNotify(UUID uuid){
+		if (!this.do_not_notify.contains(uuid)){
+			this.do_not_notify.add(uuid);
+		}
+	}
+	
+	public void notify(UUID uuid){
+		if (this.do_not_notify.contains(uuid)){
+			this.do_not_notify.remove(uuid);
+		}
 	}
 	
 }

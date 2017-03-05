@@ -21,6 +21,8 @@ public class AutoSell extends JavaPlugin{
 	 * Static
 	 */
 	public static final String me = ChatColor.WHITE + "[" + ChatColor.GOLD + "AutoSell" + ChatColor.WHITE + "]: ";
+	public static final long initial_delay = 600L;
+	public static long repeating_delay = 1200L;
 	
 	/*
 	 * Global Runtime
@@ -37,6 +39,7 @@ public class AutoSell extends JavaPlugin{
 	private Listeners listeners = null;
 	private ChestManager cm = null;
 	private FileConfiguration worth = null;
+	private AutoSeller as = null;
 	
 	private int taskId = -1;
 	
@@ -46,7 +49,6 @@ public class AutoSell extends JavaPlugin{
 	
 	public void onEnable(){
 		this.saveDefaultConfig();
-		//listYamlContents();  - for debugging worth file
 		if (!setupEconomy()){
 			this.getLogger().severe(ChatColor.stripColor(me) + " disabled due to missing Vault API hook.");
 			this.getServer().getPluginManager().disablePlugin(this);
@@ -60,12 +62,12 @@ public class AutoSell extends JavaPlugin{
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-		//boolean loaded = this.loadWorthFile();
-		//if (!loaded){this.getLogger().severe("Failed to load essentials worth file, disabling myself.");}else{this.getLogger().info("Loaded essentials worth file into memory!");}
+		AutoSell.repeating_delay = this.getConfig().getInt("delay") * 20L;
 		this.cm = new ChestManager(this);
 		if (this.listeners == null){this.listeners = new Listeners(this);}
 		this.listeners.register();
-		taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AutoSeller(this, cm), 600L, 6000L);
+		as = new AutoSeller(this, cm);
+		taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, as, AutoSell.initial_delay, AutoSell.repeating_delay);
 		this.getLogger().severe(ChatColor.stripColor(me) + " version: " + this.getDescription().getVersion() + " enabled!");
 	}
 	
@@ -89,6 +91,7 @@ public class AutoSell extends JavaPlugin{
 	}
 	
 	@SuppressWarnings("unused")
+	@Deprecated
 	private void listYamlContents(){
 		YamlManager ym = new YamlManager(this, "", "worth");
 		Map <String, Object> contents = ym.getYAML().getValues(true);
@@ -134,6 +137,10 @@ public class AutoSell extends JavaPlugin{
 	
 	public Essentials getEssentials(){
 		return this.ess;
+	}
+	
+	public AutoSeller getAutoSeller(){
+		return this.as;
 	}
 	
 }

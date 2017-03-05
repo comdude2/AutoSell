@@ -3,8 +3,6 @@ package net.comdude2.plugins.commissioned.autosell.chests;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.comdude2.plugins.commissioned.autosell.main.AutoSell;
@@ -21,10 +19,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class AutoSeller implements Runnable{
 	
-	private final boolean debug = true;
-	
 	private AutoSell as = null;
 	private ChestManager cm = null;
+	private long lastFinish = 0L;
 	
 	public AutoSeller(AutoSell as, ChestManager cm){
 		this.as = as;
@@ -39,7 +36,7 @@ public class AutoSeller implements Runnable{
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 		String time = df.format(d);
 		as.getLogger().info(ChatColor.stripColor(AutoSell.me) + "Starting automatic selling of items '" + time + "'");
-		HashMap <OfflinePlayer, BigDecimal> sales = new HashMap <OfflinePlayer, BigDecimal> ();
+		SalesManager sales = new SalesManager();
 		ConcurrentLinkedQueue <AutoChest> chests = cm.getChests();
 		for (AutoChest c : chests){
 			try{
@@ -53,56 +50,70 @@ public class AutoSeller implements Runnable{
 								Inventory ci = chest.getInventory();
 								//Invi manip
 								ItemStack[] items = ci.getContents();
-								if (items == null){System.out.println("No contents");}
-								for (ItemStack item : items){
-									if (item != null){
-										BigDecimal value = as.getEssentials().getWorth().getPrice(item);
-										OfflinePlayer op = as.getServer().getOfflinePlayer(c.getPlayerId());
-										if (op != null){
-											as.getLogger().info("Item found: " + item.getType().name() + " amount: " + item.getAmount() + " value: " + value);
-											//ci.remove(item);
-											if (!sales.containsKey(c.getPlayerId())){
-												sales.put(op, value);
+								if (items == null){}else{
+									Double v = new Double(0);
+									OfflinePlayer op = as.getServer().getOfflinePlayer(c.getPlayerId());
+									for (ItemStack item : items){
+										if (item != null){
+											BigDecimal value = as.getEssentials().getWorth().getPrice(item);
+											if (op != null){
+												v += (Double.valueOf(value.toString())) * item.getAmount();
+												//as.getLogger().info("Item found: " + item.getType().name() + " amount: " + item.getAmount() + " value: " + value);
+												ci.remove(item);
 											}else{
-												sales.put(op, sales.get(op).add(value));
+												//Player doesn't exist, remove sign?
+												cm.remove(c);
+												as.getLogger().warning("Couldn't find player owning chest at: " + chest.getLocation().toString());
 											}
-										}else{
-											//Player doesn't exist, remove sign?
 										}
 									}
-								}
-								for (Map.Entry<OfflinePlayer, BigDecimal> sale : sales.entrySet()){
-									as.econ.depositPlayer(sale.getKey(), Double.valueOf(sale.getValue().toString()));
-									if (sale.getKey().isOnline()){
-										Player p = as.getServer().getPlayer(sale.getKey().getUniqueId());
-										if (p != null){p.sendMessage(AutoSell.me + "You gained " + sale.getValue() + " from AutoSell chests.");}
+									if (sales.getSale(op.getUniqueId()) == null){
+										sales.addSale(new Sale(op, v));
+									}else{
+										sales.getSale(op.getUniqueId()).addValue(v);;
 									}
 								}
-								System.out.println("Hmm");
 							}else{
-								//Warn (Wrong block)
-								System.out.println("1");
+								//Wrong block type, delete chest from system
+								as.getChestManager().remove(c);
 							}
 						}else{
-							//Warn
-							System.out.println("2");
+							//Block was null, shouldn't fire
+							as.getChestManager().remove(c);
 						}
 					}else{
 						//Warn
-						System.out.println("3");
+						as.getLogger().warning("Failed to find world '" + c.getChestLocation(as).getWorld().getUID() + "' keeping chest in the system in case world is loaded again.");
 					}
 				}else{
 					//Warn
-					System.out.println("4");
+					as.getLogger().warning("Failed to get chest location for a chest owned by: " + c.getPlayerId() + " deleting chest...");
+					as.getChestManager().remove(c);
 				}
 			}catch(Exception e){/*Warn*/
 				e.printStackTrace();
 			}
 		}
+		for (Sale sale : sales.getSales()){
+			as.econ.depositPlayer(sale.getOfflinePlayer(), Double.valueOf(sale.getValue().toString()));
+			if (sale.getOfflinePlayer().isOnline()){
+				Player p = as.getServer().getPlayer(sale.getOfflinePlayer().getUniqueId());
+				if (p != null){
+					if (!as.getChestManager().getDoNotNotify().contains(p.getUniqueId())){
+						p.sendMessage(AutoSell.me + "You gained " + sale.getValue() + " from AutoSell chests.");
+					}
+				}
+			}
+		}
 		d = new Date();
 		finish = d.getTime();
 		long ttf = finish - start;
+		this.lastFinish = finish;
 		as.getLogger().info(ChatColor.stripColor(AutoSell.me) + "Finished automatic selling of items, took: " + ttf + " milliseconds!");
+	}
+	
+	public long getLastFinish(){
+		return this.lastFinish;
 	}
 	
 }
