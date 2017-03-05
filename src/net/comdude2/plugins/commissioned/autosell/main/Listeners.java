@@ -1,5 +1,6 @@
 package net.comdude2.plugins.commissioned.autosell.main;
 
+import net.comdude2.plugins.commissioned.autosell.chests.AutoChest;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Material;
@@ -39,7 +40,17 @@ public class Listeners implements Listener{
 					Block attatchedBlock = event.getBlock().getRelative(s.getAttachedFace());
 					if (attatchedBlock.getType() == Material.CHEST){
 						//Is fine
-						
+						if (!as.getChestManager().chestExists(attatchedBlock.getLocation())){
+							AutoChest ac = new AutoChest(event.getPlayer().getUniqueId(), attatchedBlock.getWorld().getUID(), attatchedBlock.getLocation().getX(), attatchedBlock.getLocation().getY(), attatchedBlock.getLocation().getZ());
+							as.getChestManager().addChest(ac);
+							as.getChestManager().save();
+							event.setLine(0, ChatColor.GOLD + "[AutoSell]");
+							event.setLine(1, event.getPlayer().getDisplayName().toString());
+							event.getPlayer().sendMessage(AutoSell.me + ChatColor.GREEN + "AutoSell chest created.");
+						}else{
+							event.setCancelled(true);
+							event.getPlayer().sendMessage(AutoSell.me + ChatColor.RED + "There is already an AutoSell on this chest.");
+						}
 					}else{
 						event.setCancelled(true);
 						event.getPlayer().sendMessage(AutoSell.me + ChatColor.RED + "You must attatch the sign to a chest.");

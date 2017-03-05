@@ -1,7 +1,8 @@
-name: Autosell
+name: AutoSell
 main: net.comdude2.plugins.commissioned.autosell.main.AutoSell
 version: 1.0.0
 author: comdude2
+depend: [Essentials,Vault]
 commands:
    autosell:
       description: The main command of the AutoSell plugin

@@ -3,8 +3,11 @@ package net.comdude2.plugins.commissioned.autosell.chests;
 import java.io.File;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.bukkit.Location;
+
 import net.comdude2.plugins.commissioned.autosell.main.AutoSell;
 import net.comdude2.plugins.commissioned.autosell.util.ObjectManager;
+import net.md_5.bungee.api.ChatColor;
 
 public class ChestManager {
 	
@@ -27,15 +30,15 @@ public class ChestManager {
 					loadedChests = (ConcurrentLinkedQueue <AutoChest>) o;
 					if (loadedChests.size() > 0){
 						chests = loadedChests;
-						as.getLogger().info(AutoSell.me + "Chests loaded, count: " + chests.size());
+						as.getLogger().info(ChatColor.stripColor(AutoSell.me) + "Chests loaded, count: " + chests.size());
 					}else{
-						as.getLogger().warning(AutoSell.me + "Chests size was 0, assuming that that's normal and that you've placed no signs.");
+						as.getLogger().warning(ChatColor.stripColor(AutoSell.me) + "Chests size was 0, assuming that that's normal and that you've placed no signs.");
 						chests = new ConcurrentLinkedQueue <AutoChest> ();
 					}
 				}else{
 					try{f.renameTo(new File(as.getDataFolder() + "/corruptedChests.obj"));}catch(Exception e){}
-					as.getLogger().severe(AutoSell.me + "Failed to load AutoSell chests.");
-					as.getLogger().severe(AutoSell.me + "Chests renamed to 'corruptedChests.obj', creating new chests list.");
+					as.getLogger().severe(ChatColor.stripColor(AutoSell.me) + "Failed to load AutoSell chests.");
+					as.getLogger().severe(ChatColor.stripColor(AutoSell.me) + "Chests renamed to 'corruptedChests.obj', creating new chests list.");
 					return false;
 				}
 			}else{
@@ -43,8 +46,8 @@ public class ChestManager {
 			}
 		}catch(Exception e){
 			e.printStackTrace();
-			as.getLogger().severe(AutoSell.me + "Failed to load AutoSell chests.");
-			as.getLogger().severe(AutoSell.me + "Chests renamed to 'corruptedChests.obj', creating new chests list.");
+			as.getLogger().severe(ChatColor.stripColor(AutoSell.me) + "Failed to load AutoSell chests.");
+			as.getLogger().severe(ChatColor.stripColor(AutoSell.me) + "Chests renamed to 'corruptedChests.obj', creating new chests list.");
 			return false;
 		}
 		return false;
@@ -61,6 +64,29 @@ public class ChestManager {
 	
 	public ConcurrentLinkedQueue <AutoChest> getChests(){
 		return this.chests;
+	}
+	
+	public boolean chestExists(Location l){
+		for (AutoChest c : chests){
+			if (c.getChestLocation(as).getWorld().getUID() == l.getWorld().getUID()){
+				if (c.getChestLocation(as).getBlockX() == l.getBlockX()){
+					if (c.getChestLocation(as).getBlockY() == l.getBlockY()){
+						if (c.getChestLocation(as).getBlockZ() == l.getBlockZ()){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public void addChest(AutoChest ac){
+		this.chests.add(ac);
+	}
+	
+	public void remove(AutoChest ac){
+		this.chests.remove(ac);
 	}
 	
 }

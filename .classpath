@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="E:/Main Doccuments/Programming/Java/spigot/1.11.2/craftbukkit-1.11.2.jar"/>
 	<classpathentry kind="lib" path="E:/Main Doccuments/Programming/Java/spigot/1.11.2/spigot-1.11.2.jar"/>
 	<classpathentry kind="lib" path="E:/Main Doccuments/Programming/Java/plugins/Reference/Vault.jar"/>
+	<classpathentry kind="lib" path="E:/Main Doccuments/Programming/Java/plugins/Reference/EssentialsX-2.0.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
