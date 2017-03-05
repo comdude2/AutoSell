@@ -28,7 +28,6 @@ public class AutoSell extends JavaPlugin{
 	 * Global Runtime
 	 */
 	
-	@SuppressWarnings("unused")
 	private boolean loaded_before = false;
 	
 	/*
@@ -44,7 +43,7 @@ public class AutoSell extends JavaPlugin{
 	private int taskId = -1;
 	
 	public AutoSell(){
-		this.loaded_before = true;
+		
 	}
 	
 	public void onEnable(){
@@ -62,12 +61,14 @@ public class AutoSell extends JavaPlugin{
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+		if (!this.loaded_before){this.getCommand("autosell").setExecutor(new AutoSellCommand(this));}
 		AutoSell.repeating_delay = this.getConfig().getInt("delay") * 20L;
 		this.cm = new ChestManager(this);
 		if (this.listeners == null){this.listeners = new Listeners(this);}
 		this.listeners.register();
 		as = new AutoSeller(this, cm);
 		taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, as, AutoSell.initial_delay, AutoSell.repeating_delay);
+		this.loaded_before = true;
 		this.getLogger().severe(ChatColor.stripColor(me) + " version: " + this.getDescription().getVersion() + " enabled!");
 	}
 	

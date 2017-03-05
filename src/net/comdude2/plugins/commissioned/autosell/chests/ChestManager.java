@@ -106,6 +106,21 @@ public class ChestManager {
 		return false;
 	}
 	
+	public AutoChest getChest(Location l){
+		for (AutoChest c : chests){
+			if (c.getChestLocation(as).getWorld().getUID() == l.getWorld().getUID()){
+				if (c.getChestLocation(as).getBlockX() == l.getBlockX()){
+					if (c.getChestLocation(as).getBlockY() == l.getBlockY()){
+						if (c.getChestLocation(as).getBlockZ() == l.getBlockZ()){
+							return c;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	public void addChest(AutoChest ac){
 		this.chests.add(ac);
 	}

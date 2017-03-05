@@ -8,4 +8,20 @@ commands:
       description: The main command of the AutoSell plugin
       usage: /<command>
       permission: autosell.use
-      permission-message: You don't have <permission>
+      permission-message: You don't have permission to perform this command.
+permissions:
+   autosell.*:
+      description: Gives access to all AutoSell commands
+      children:
+         autosell.create: true
+         autosell.use: true
+         autosell.notify: true
+   autosell.use:
+      description: Allows usage of /autosell to check the time to next sale
+      default: true
+   autosell.create:
+      description: Allows the creation of AutoSell chests
+      default: op
+   autosell.notify:
+      description: Allows toggling of AutoSell notifications with /autosell notify
+      default: op
