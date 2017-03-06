@@ -40,7 +40,7 @@ public class Listeners implements Listener{
 						//Check the attatched block is a chest
 						Sign s = (Sign)event.getBlock().getState().getData();
 						Block attatchedBlock = event.getBlock().getRelative(s.getAttachedFace());
-						if (attatchedBlock.getType() == Material.CHEST){
+						if (attatchedBlock.getType() == Material.CHEST || attatchedBlock.getType() == Material.TRAPPED_CHEST){
 							//Is fine
 							if (!as.getChestManager().chestExists(attatchedBlock.getLocation())){
 								AutoChest ac = new AutoChest(event.getPlayer().getUniqueId(), attatchedBlock.getWorld().getUID(), attatchedBlock.getLocation().getX(), attatchedBlock.getLocation().getY(), attatchedBlock.getLocation().getZ());
@@ -74,13 +74,13 @@ public class Listeners implements Listener{
 		if (event.getBlock().getType() == Material.WALL_SIGN){
 			Sign s = (Sign)event.getBlock().getState().getData();
 			Block attatchedBlock = event.getBlock().getRelative(s.getAttachedFace());
-			if (attatchedBlock.getType() == Material.CHEST){
+			if (attatchedBlock.getType() == Material.CHEST || attatchedBlock.getType() == Material.TRAPPED_CHEST){
 				if (as.getChestManager().chestExists(attatchedBlock.getLocation())){
 					as.getChestManager().remove(as.getChestManager().getChest(attatchedBlock.getLocation()));
 					event.getPlayer().sendMessage(AutoSell.me + "Auto chest removed.");
 				}
 			}//Not mine
-		}else if(event.getBlock().getType() == Material.CHEST){
+		}else if(event.getBlock().getType() == Material.CHEST || event.getBlock().getType() == Material.TRAPPED_CHEST){
 			if (as.getChestManager().chestExists(event.getBlock().getLocation())){
 				as.getChestManager().remove(as.getChestManager().getChest(event.getBlock().getLocation()));
 				event.getPlayer().sendMessage(AutoSell.me + "Auto chest removed.");

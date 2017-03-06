@@ -45,7 +45,7 @@ public class AutoSeller implements Runnable{
 					if (w != null){
 						Block b = w.getBlockAt(c.getChestLocation(as));
 						if (b != null){
-							if (b.getType() == Material.CHEST){
+							if (b.getType() == Material.CHEST || b.getType() == Material.TRAPPED_CHEST){
 								Chest chest = (Chest)b.getState();
 								Inventory ci = chest.getInventory();
 								//Invi manip
