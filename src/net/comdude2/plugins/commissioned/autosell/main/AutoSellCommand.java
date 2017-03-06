@@ -21,7 +21,6 @@ public class AutoSellCommand implements CommandExecutor{
 			Date d = new Date();
 			long now = d.getTime();
 			long difference = now - as.getAutoSeller().getLastFinish();
-			System.out.println("Difference is: " + difference);
 			if (as.getAutoSeller().getLastFinish() == 0){
 				//Server just started
 				sender.sendMessage(AutoSell.me + "The next AutoSell should start within a minute.");

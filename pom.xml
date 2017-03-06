@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>AutoSell</groupId>
   <artifactId>AutoSell</artifactId>
-  <version>1.0.17-ALPHA</version>
+  <version>1.2.1-BETA</version>
   <name>AutoSell</name>
   <description>A plugin that sells items automatically</description>
   <build>
