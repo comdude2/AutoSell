@@ -25,6 +25,7 @@ public class AutoChest implements Serializable{
 		this.z = z;
 	}
 	
+	@Deprecated
 	public Location getChestLocation(AutoSell as){
 		World w = as.getServer().getWorld(worldId);
 		if (w == null){return null;}
@@ -34,6 +35,22 @@ public class AutoChest implements Serializable{
 	
 	public UUID getPlayerId(){
 		return this.playerId;
+	}
+	
+	public UUID getWorldId(){
+		return this.worldId;
+	}
+	
+	public double getX(){
+		return this.x;
+	}
+	
+	public double getY(){
+		return this.y;
+	}
+	
+	public double getZ(){
+		return this.z;
 	}
 	
 	@Override

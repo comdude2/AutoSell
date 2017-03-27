@@ -93,10 +93,10 @@ public class ChestManager {
 	
 	public boolean chestExists(Location l){
 		for (AutoChest c : chests){
-			if (c.getChestLocation(as).getWorld().getUID() == l.getWorld().getUID()){
-				if (c.getChestLocation(as).getBlockX() == l.getBlockX()){
-					if (c.getChestLocation(as).getBlockY() == l.getBlockY()){
-						if (c.getChestLocation(as).getBlockZ() == l.getBlockZ()){
+			if (c.getWorldId().equals(l.getWorld().getUID())){
+				if (c.getX() == l.getX()){
+					if (c.getY() == l.getY()){
+						if (c.getZ() == l.getZ()){
 							return true;
 						}
 					}
@@ -108,10 +108,10 @@ public class ChestManager {
 	
 	public AutoChest getChest(Location l){
 		for (AutoChest c : chests){
-			if (c.getChestLocation(as).getWorld().getUID() == l.getWorld().getUID()){
-				if (c.getChestLocation(as).getBlockX() == l.getBlockX()){
-					if (c.getChestLocation(as).getBlockY() == l.getBlockY()){
-						if (c.getChestLocation(as).getBlockZ() == l.getBlockZ()){
+			if (c.getWorldId().equals(l.getWorld().getUID())){
+				if (c.getX() == l.getX()){
+					if (c.getY() == l.getY()){
+						if (c.getZ() == l.getZ()){
 							return c;
 						}
 					}
